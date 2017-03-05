@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <climits>
 #include "common.hpp"
 #include "board.hpp"
 using namespace std;

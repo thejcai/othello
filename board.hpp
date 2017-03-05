@@ -30,6 +30,8 @@ public:
     int count(Side side);
     int countBlack();
     int countWhite();
+    bool isCorner(Move *m);
+    bool isNextToCorner(Move *m);
 
     void setBoard(char data[]);
 

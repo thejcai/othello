@@ -112,7 +112,6 @@ vector<Move*> Board::getMoves(Side side)
             Move *move = new Move(i, j);
             if (checkMove(move, side)) 
             {
-                // cerr << move->getX() << " " << move->getY() << endl;
                 to_return.push_back(move);
             }
         }
@@ -179,6 +178,36 @@ int Board::countBlack() {
  */
 int Board::countWhite() {
     return taken.count() - black.count();
+}
+
+/*
+ * Determines if a move is in the corner
+ */
+bool Board::isCorner(Move * m)
+{
+    return (m->getX() == 0 && m->getY() == 0) ||
+            (m->getX() == 0 && m->getY() == 7) ||
+            (m->getX() == 7 && m->getY() == 0) ||
+            (m->getX() == 7 && m->getY() == 7);
+}
+
+/*
+ * Determines if a move is next to the corner
+ */
+bool Board::isNextToCorner(Move *m)
+{
+    return (m->getX() == 1 && m->getY() == 0) ||
+            (m->getX() == 0 && m->getY() == 1) ||
+            (m->getX() == 1 && m->getY() == 1) ||
+            (m->getX() == 6 && m->getY() == 0) ||
+            (m->getX() == 6 && m->getY() == 1) ||
+            (m->getX() == 7 && m->getY() == 1) ||
+            (m->getX() == 0 && m->getY() == 6) ||
+            (m->getX() == 1 && m->getY() == 6) ||
+            (m->getX() == 1 && m->getY() == 7) ||
+            (m->getX() == 6 && m->getY() == 6) ||
+            (m->getX() == 7 && m->getY() == 6) ||
+            (m->getX() == 6 && m->getY() == 7);
 }
 
 /*

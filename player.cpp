@@ -54,36 +54,57 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-
-    // cerr << "Doing move\n";
     
     // Process opponent move
     board->doMove(opponentsMove, opponent_side);
 
-    // cerr << "Make opponent move\n" << endl;
-
     // Get moves
     vector<Move*> moves = board->getMoves(my_side);
-
-    // cerr << "Got moves\n";
 
     // Return nullptr if no moves
     if (moves.size() == 0)
         return nullptr;
 
-    // cerr << "Checked if neg\n";
+    // Pick and return a random move (used in first AI)
+    // int r = rand() % moves.size();
 
-    // Pick and return a random move
-    int r = rand() % moves.size();
+    // Look through moves and calculate scores
+    Move * to_return;
+    int max_score = INT_MIN;
+    for (unsigned int i = 0; i < moves.size(); i++)
+    {
+        Board * temp_board = board->copy();
+        temp_board->doMove(moves[i], my_side);
+        int this_score = temp_board->count(my_side) - 
+                            temp_board->count(opponent_side);
 
-    // cerr << "Num possible moves: " << r << endl;
-    // cerr << "Got random move, returning now\n";
+        // Increase corner value
+        if (temp_board->isCorner(moves[i]))
+        {
+            this_score = INT_MAX;
+        }
 
-    cerr << "Making move: " << moves[r]->getX() << " " << moves[r]->getY() << endl;
+        // Decrease value for spaces right next to corner
+        if (temp_board->isNextToCorner(moves[i]))
+        {
+            if (this_score < 0)
+                this_score *= 3;
+            else
+                this_score *= -3;
+        }
+
+        if (this_score > max_score)
+        {
+            max_score = this_score;
+            to_return = moves[i];
+        }
+    }
+
+    cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
 
     // Make move on board
-    board->doMove(moves[r], my_side);
+    board->doMove(to_return, my_side);
 
-    return moves[r];
+    return to_return;
 
 }
