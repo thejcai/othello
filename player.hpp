@@ -17,6 +17,8 @@ public:
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *getRandomMove(vector<Move*> moves);
     Move *getHeuristicMove(vector<Move*> moves);
+    Move *getTwoPlyMove(vector<Move *> moves);
+    void setBoard(Board * board);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;

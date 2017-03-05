@@ -36,6 +36,11 @@ Player::~Player() {
 
 }
 
+void Player::setBoard(Board * board)
+{
+    this->board = board;
+}
+
 /*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
@@ -66,7 +71,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         return nullptr;
 
     //Move * to_return = getRandomMove(moves);
-    Move * to_return = getHeuristicMove(moves);
+    Move * to_return = getTwoPlyMove(moves);
 
     cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
 
@@ -118,5 +123,68 @@ Move * Player::getHeuristicMove(vector<Move *> moves)
             to_return = moves[i];
         }
     }
+    return to_return;
+}
+
+Move * Player::getTwoPlyMove(vector<Move *> moves)
+{
+    Move * to_return;
+    int max_score = INT_MIN;
+    // go through all user possible moves
+    for (unsigned int i = 0; i < moves.size(); i++)
+    {
+        Board * temp_board = board->copy();
+        temp_board->doMove(moves[i], my_side);
+        
+        // do the same as before, since now we must calculate the heuristic 
+        // for each opponent move (for every user move)
+        int opp_min_score = INT_MAX;
+
+        // get opponent's possible moves for this specific move
+        vector<Move*> oppmoves = temp_board->getMoves(opponent_side);
+
+        // If opponent cannot make any moves, we calculate heuristic now
+        // and return nullptr for opponent move
+        if (oppmoves.size() == 0)
+        {
+            opp_min_score = temp_board->count(my_side) - 
+                            temp_board->count(opponent_side);
+        }
+        else
+        {
+            /* 
+             * go through all the AI possible moves
+             * making sure to account for the heuristic 
+             * of difference in number of stones on the board 
+             * and find the lowest score heuristically possible 
+             * from the user's move
+             */
+            for (unsigned int j = 0; j < oppmoves.size(); j++)
+            {
+                // make opponent move
+                Board * opp_temp_board = temp_board->copy();
+                opp_temp_board->doMove(oppmoves[j], opponent_side);
+
+                // get heuristic for specific move
+                int this_score = opp_temp_board->count(my_side) -
+                                    opp_temp_board->count(opponent_side);
+
+                if (this_score < opp_min_score)
+                {
+                    opp_min_score = this_score;
+                }
+
+            }
+
+        }
+
+        if (opp_min_score > max_score)
+        {
+            max_score = opp_min_score;
+            to_return = moves[i];
+        }
+
+    }
+
     return to_return;
 }
