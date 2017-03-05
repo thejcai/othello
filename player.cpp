@@ -65,10 +65,29 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (moves.size() == 0)
         return nullptr;
 
-    // Pick and return a random move (used in first AI)
-    // int r = rand() % moves.size();
+    //Move * to_return = getRandomMove(moves);
+    Move * to_return = getHeuristicMove(moves);
 
-    // Look through moves and calculate scores
+    cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
+
+    // Make move on board
+    board->doMove(to_return, my_side);
+
+    return to_return;
+
+}
+
+Move * Player::getRandomMove(vector<Move *> moves)
+{
+    // Pick and return a random move (used in first AI)
+    srand (time(NULL));
+    int r = rand() % moves.size();
+
+    return moves[r];
+}
+
+Move * Player::getHeuristicMove(vector<Move *> moves)
+{
     Move * to_return;
     int max_score = INT_MIN;
     for (unsigned int i = 0; i < moves.size(); i++)
@@ -99,12 +118,5 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
             to_return = moves[i];
         }
     }
-
-    cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
-
-    // Make move on board
-    board->doMove(to_return, my_side);
-
     return to_return;
-
 }

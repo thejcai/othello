@@ -15,6 +15,8 @@ public:
     ~Player();
 
     Move *doMove(Move *opponentsMove, int msLeft);
+    Move *getRandomMove(vector<Move*> moves);
+    Move *getHeuristicMove(vector<Move*> moves);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
