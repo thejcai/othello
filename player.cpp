@@ -16,9 +16,15 @@ Player::Player(Side side) {
      */
     my_side = side;
     if (my_side == WHITE)
+    {
+        cerr << "Color: white\n";
         opponent_side = BLACK;
+    }
     else
+    {
+        cerr << "Color: black\n";
         opponent_side = WHITE;
+    }
 
     board = new Board();
 }
@@ -48,27 +54,35 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
+
+    // cerr << "Doing move\n";
     
     // Process opponent move
     board->doMove(opponentsMove, opponent_side);
 
-    cerr << "Make opponent move\n" << endl;
+    // cerr << "Make opponent move\n" << endl;
 
     // Get moves
     vector<Move*> moves = board->getMoves(my_side);
 
-    cerr << "Got moves\n";
+    // cerr << "Got moves\n";
 
     // Return nullptr if no moves
     if (moves.size() == 0)
         return nullptr;
 
-    cerr << "Checked if neg\n";
+    // cerr << "Checked if neg\n";
 
     // Pick and return a random move
     int r = rand() % moves.size();
 
-    cerr << "Got random move, returning now\n";
+    // cerr << "Num possible moves: " << r << endl;
+    // cerr << "Got random move, returning now\n";
+
+    cerr << "Making move: " << moves[r]->getX() << " " << moves[r]->getY() << endl;
+
+    // Make move on board
+    board->doMove(moves[r], my_side);
 
     return moves[r];
 

@@ -109,8 +109,12 @@ vector<Move*> Board::getMoves(Side side)
     vector<Move*> to_return;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            Move move(i, j);
-            if (checkMove(&move, side)) to_return.push_back(&move);
+            Move *move = new Move(i, j);
+            if (checkMove(move, side)) 
+            {
+                // cerr << move->getX() << " " << move->getY() << endl;
+                to_return.push_back(move);
+            }
         }
     }
     return to_return;
