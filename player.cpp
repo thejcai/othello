@@ -10,19 +10,17 @@ Player::Player(Side side) {
     testingMinimax = false;
 
     /*
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
+     * Initialization
      */
     my_side = side;
     if (my_side == WHITE)
     {
-        cerr << "Color: white\n";
+        cerr << "Playing as WHITE\n";
         opponent_side = BLACK;
     }
     else
     {
-        cerr << "Color: black\n";
+        cerr << "Playing as BLACK\n";
         opponent_side = WHITE;
     }
 
@@ -36,6 +34,9 @@ Player::~Player() {
 
 }
 
+/*
+ * Set the board to a given configuration
+ */
 void Player::setBoard(Board * board)
 {
     this->board = board;
@@ -55,11 +56,7 @@ void Player::setBoard(Board * board)
  * return nullptr.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /*
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */
-    
+
     // Process opponent move
     board->doMove(opponentsMove, opponent_side);
 
@@ -70,10 +67,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (moves.size() == 0)
         return nullptr;
 
-    //Move * to_return = getRandomMove(moves);
+    // Move * to_return = getRandomMove(moves);
+    // Move * to_return = getHeuristicMove(moves);
     Move * to_return = getTwoPlyMove(moves);
 
-    cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
+    // cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
 
     // Make move on board
     board->doMove(to_return, my_side);
@@ -84,8 +82,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
 Move * Player::getRandomMove(vector<Move *> moves)
 {
-    // Pick and return a random move (used in first AI)
+    // Seed rand
     srand (time(NULL));
+
+    // Pick and return a random move (used in first AI)
     int r = rand() % moves.size();
 
     return moves[r];
@@ -95,6 +95,7 @@ Move * Player::getHeuristicMove(vector<Move *> moves)
 {
     Move * to_return;
     int max_score = INT_MIN;
+
     for (unsigned int i = 0; i < moves.size(); i++)
     {
         Board * temp_board = board->copy();
@@ -130,17 +131,18 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
 {
     Move * to_return;
     int max_score = INT_MIN;
-    // go through all user possible moves
+
+    // Go through all user possible moves
     for (unsigned int i = 0; i < moves.size(); i++)
     {
         Board * temp_board = board->copy();
         temp_board->doMove(moves[i], my_side);
         
-        // do the same as before, since now we must calculate the heuristic 
+        // Do the same as before, since now we must calculate the heuristic 
         // for each opponent move (for every user move)
         int opp_min_score = INT_MAX;
 
-        // get opponent's possible moves for this specific move
+        // Get opponent's possible moves for this specific move
         vector<Move*> oppmoves = temp_board->getMoves(opponent_side);
 
         // If opponent cannot make any moves, we calculate heuristic now
@@ -152,20 +154,14 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
         }
         else
         {
-            /* 
-             * go through all the AI possible moves
-             * making sure to account for the heuristic 
-             * of difference in number of stones on the board 
-             * and find the lowest score heuristically possible 
-             * from the user's move
-             */
+            // Go through all AI moves and pick lowest score
             for (unsigned int j = 0; j < oppmoves.size(); j++)
             {
-                // make opponent move
+                // Make opponent move
                 Board * opp_temp_board = temp_board->copy();
                 opp_temp_board->doMove(oppmoves[j], opponent_side);
 
-                // get heuristic for specific move
+                // Get heuristic for specific move
                 int this_score = opp_temp_board->count(my_side) -
                                     opp_temp_board->count(opponent_side);
 
@@ -173,9 +169,7 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
                 {
                     opp_min_score = this_score;
                 }
-
             }
-
         }
 
         if (opp_min_score > max_score)
