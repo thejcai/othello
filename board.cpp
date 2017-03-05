@@ -55,19 +55,6 @@ bool Board::isDone() {
 }
 
 /*
- * Returns true if there are legal moves for the given side.
- */
-bool Board::hasMoves(Side side) {
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            Move move(i, j);
-            if (checkMove(&move, side)) return true;
-        }
-    }
-    return false;
-}
-
-/*
  * Returns true if a move is legal for the given side; false otherwise.
  */
 bool Board::checkMove(Move *m, Side side) {
@@ -99,6 +86,34 @@ bool Board::checkMove(Move *m, Side side) {
         }
     }
     return false;
+}
+
+/*
+ * Returns true if there are legal moves for the given side.
+ */
+bool Board::hasMoves(Side side) {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            Move move(i, j);
+            if (checkMove(&move, side)) return true;
+        }
+    }
+    return false;
+}
+
+/*
+ * Returns vector of all possible moves for the given side.
+ */
+vector<Move*> Board::getMoves(Side side)
+{
+    vector<Move*> to_return;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            Move move(i, j);
+            if (checkMove(&move, side)) to_return.push_back(&move);
+        }
+    }
+    return to_return;
 }
 
 /*

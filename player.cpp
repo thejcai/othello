@@ -14,12 +14,20 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
+    my_side = side;
+    if (my_side == WHITE)
+        opponent_side = BLACK;
+    else
+        opponent_side = WHITE;
+
+    board = new Board();
 }
 
 /*
  * Destructor for the player.
  */
 Player::~Player() {
+
 }
 
 /*
@@ -40,5 +48,28 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-    return nullptr;
+    
+    // Process opponent move
+    board->doMove(opponentsMove, opponent_side);
+
+    cerr << "Make opponent move\n" << endl;
+
+    // Get moves
+    vector<Move*> moves = board->getMoves(my_side);
+
+    cerr << "Got moves\n";
+
+    // Return nullptr if no moves
+    if (moves.size() == 0)
+        return nullptr;
+
+    cerr << "Checked if neg\n";
+
+    // Pick and return a random move
+    int r = rand() % moves.size();
+
+    cerr << "Got random move, returning now\n";
+
+    return moves[r];
+
 }

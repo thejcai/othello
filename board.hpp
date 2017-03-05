@@ -2,6 +2,7 @@
 #define __BOARD_H__
 
 #include <bitset>
+#include <vector>
 #include "common.hpp"
 using namespace std;
 
@@ -30,6 +31,8 @@ public:
     int countWhite();
 
     void setBoard(char data[]);
+
+    vector<Move*> getMoves(Side side);
 };
 
 #endif
