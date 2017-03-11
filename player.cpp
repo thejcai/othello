@@ -229,6 +229,8 @@ Move * Player::getMinimax(Board * b, std::vector<Move *> m)
 
     int max = 0;
     int max_score = scores[0];
+
+    // Select maximum move
     for (unsigned int i = 1; i < scores.size(); i++)
     {
         if (scores[i] > max_score)
@@ -248,11 +250,13 @@ int Player::getMaxMove(Board * b, int depth, int alpha, int beta)
     vector<Move * > moves = b->getMoves(my_side);
     vector<int> scores(moves.size(), 0);
 
+    // If depth reached
     if (depth == 0)
     {
         return getScore(b);
     }
 
+    // If no possible moves
     if (moves.size() == 0)
     {
         return getMinMove(b, depth - 1, alpha, beta);
@@ -267,6 +271,7 @@ int Player::getMaxMove(Board * b, int depth, int alpha, int beta)
         scores[i] = getMinMove(copy, depth - 1, alpha, beta);
         // cerr << "Max score: " << scores[i] << "\n";
 
+        // Alpha beta pruning
         if (scores[i] > alpha)
         {
             alpha = scores[i];
@@ -299,11 +304,13 @@ int Player::getMinMove(Board * b, int depth, int alpha, int beta)
     vector<Move * > moves = b->getMoves(opponent_side);
     vector<int> scores(moves.size(), 0);
 
+    // If depth reached
     if (depth == 0)
     {
         return getScore(b);
     }
 
+    // If no possible moves
     if (moves.size() == 0)
     {
         return getMaxMove(b, depth - 1, alpha, beta);
@@ -318,6 +325,7 @@ int Player::getMinMove(Board * b, int depth, int alpha, int beta)
         scores[i] = getMaxMove(copy, depth - 1, alpha, beta);
         // cerr << "\tmin score: " << scores[i] << "\n";
 
+        // Alpha Beta pruning
         if (scores[i] < beta)
         {
             beta = scores[i];
