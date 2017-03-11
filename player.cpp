@@ -69,7 +69,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
     // Move * to_return = getRandomMove(moves);
     // Move * to_return = getHeuristicMove(moves);
-    Move * to_return = getTwoPlyMove(moves);
+    // Move * to_return = getTwoPlyMove(moves);
+    Move * to_return = getMinimax(moves, 2);
 
     // cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
 
@@ -182,3 +183,144 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
 
     return to_return;
 }
+
+Move *Player::getMinimax(std::vector<Move *> moves, int depth)
+{
+    Board * temp_board = board->copy();
+    return getMaxMove(temp_board, moves, depth, my_side);
+}
+
+Move *Player::getMaxMove(Board * b, std::vector<Move *> moves, 
+    int depth, Side s)
+{
+    if (depth == 0)
+    {
+        return nullptr;
+    }
+
+    Move * to_return;
+    int max_score = INT_MIN;
+
+    // Go through all user possible moves
+    for (unsigned int i = 0; i < moves.size(); i++)
+    {
+        Board * temp_board = b->copy();
+        temp_board->doMove(moves[i], my_side);
+        cerr << "Our move: " << moves[i]->getX() << " " << moves[i]->getY() << "\n";
+
+        // Get opponent's possible moves for this specific move
+        vector<Move*> oppmoves = temp_board->getMoves(opponent_side);
+
+        if (oppmoves.size() == 0)
+        {
+            int this_score = temp_board->count(my_side) -
+                                temp_board->count(opponent_side);
+
+            if (this_score > max_score)
+            {
+                max_score = this_score;
+                to_return = moves[i];
+            }        
+        }
+        else
+        {
+            int this_score;
+
+            // Find opponent's minimum move
+            Move * oppmove = getMinMove(temp_board, oppmoves, 
+                depth - 1, opponent_side);
+
+            if (oppmove == nullptr)
+            {
+                this_score = temp_board->count(my_side) -
+                                temp_board->count(opponent_side);
+            }
+            else
+            {
+                temp_board->doMove(oppmove, opponent_side);
+                this_score = temp_board->count(my_side) -
+                                temp_board->count(opponent_side);
+            }
+
+            if (this_score > max_score)
+            {
+                max_score = this_score;
+                to_return = moves[i];
+            }
+        }
+    }
+    cerr << "Max score: " << max_score << "\n";
+
+    return to_return;
+}
+
+Move *Player::getMinMove(Board * b, std::vector<Move *> moves, 
+        int depth, Side s)
+{
+    if (depth == 0)
+    {
+        return nullptr;
+    }
+
+    Move * to_return;
+    int min_score = INT_MAX;
+
+    // Go through all opponent possible moves
+    for (unsigned int i = 0; i < moves.size(); i++)
+    {
+        Board * temp_board = b->copy();
+        temp_board->doMove(moves[i], opponent_side);
+        cerr << "\tOpp moves: " << moves[i]->getX() << " " << moves[i]->getY() << "\n";
+
+        // Get opponent's possible moves for this specific move
+        vector<Move*> mymoves = temp_board->getMoves(my_side);
+
+        if (mymoves.size() == 0)
+        {
+            int this_score = temp_board->count(my_side) -
+                                temp_board->count(opponent_side);
+
+            cerr << "\t\tthis score: " << this_score << "\n";
+
+            if (this_score < min_score)
+            {
+                min_score = this_score;
+                to_return = moves[i];
+            }          
+        }
+        else
+        {
+            int this_score;
+
+            // Find my minimum move
+            Move * mymove = getMaxMove(temp_board, mymoves, 
+                depth - 1, my_side);
+
+            if (mymove == nullptr)
+            {
+                this_score = temp_board->count(my_side) -
+                                temp_board->count(opponent_side);
+            }
+            else
+            {
+                temp_board->doMove(mymove, my_side);
+                this_score = temp_board->count(my_side) -
+                                temp_board->count(opponent_side);
+            }
+
+            cerr << "\t\tthis score: " << this_score << "\n";
+
+            if (this_score < min_score)
+            {
+                min_score = this_score;
+                to_return = moves[i];
+            }
+        }
+
+    }
+
+    cerr << "\tScore: " << min_score << "\n";
+
+    return to_return;
+}
+
