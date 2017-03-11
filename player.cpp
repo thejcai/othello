@@ -57,6 +57,7 @@ void Player::setBoard(Board * board)
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
+
     // Process opponent move
     board->doMove(opponentsMove, opponent_side);
 
@@ -70,7 +71,6 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     // Move * to_return = getRandomMove(moves);
     // Move * to_return = getHeuristicMove(moves);
     Move * to_return = getTwoPlyMove(moves);
-
     // cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
 
     // Make move on board
@@ -127,6 +127,29 @@ Move * Player::getHeuristicMove(vector<Move *> moves)
     return to_return;
 }
 
+int Player::getOppMoveValue(Board * board, Move * move)
+{
+    int this_score = board->count(my_side) - 
+                        board->count(opponent_side);
+
+    // Increase corner value
+    if (board->isCorner(move))
+    {
+        this_score = -100;
+    }
+
+    // Increase value for spaces right next to corner, since it favors us
+    if (board->isNextToCorner(move))
+    {
+        if (this_score < 0)
+            this_score *= -3;
+        else
+            this_score *= 3;
+    }
+
+    return this_score;
+}
+
 Move * Player::getTwoPlyMove(vector<Move *> moves)
 {
     Move * to_return;
@@ -144,7 +167,6 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
 
         // Get opponent's possible moves for this specific move
         vector<Move*> oppmoves = temp_board->getMoves(opponent_side);
-
         // If opponent cannot make any moves, we calculate heuristic now
         // and return nullptr for opponent move
         if (oppmoves.size() == 0)
@@ -162,8 +184,7 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
                 opp_temp_board->doMove(oppmoves[j], opponent_side);
 
                 // Get heuristic for specific move
-                int this_score = opp_temp_board->count(my_side) -
-                                    opp_temp_board->count(opponent_side);
+                int this_score = getOppMoveValue(opp_temp_board, oppmoves[j]);
 
                 if (this_score < opp_min_score)
                 {
