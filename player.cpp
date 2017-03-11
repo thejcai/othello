@@ -70,13 +70,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
     // Move * to_return = getRandomMove(moves);
     // Move * to_return = getHeuristicMove(moves);
-<<<<<<< HEAD
-    Move * to_return = getTwoPlyMove(moves);
-=======
     // Move * to_return = getTwoPlyMove(moves);
-    Move * to_return = getMinimax(moves, 2);
+    Move * to_return = getMinimax(board, moves);
 
->>>>>>> 36b28e554515a65a3c29329ad27eb88f46528026
     // cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
 
     // Make move on board
@@ -167,7 +163,12 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
     {
         Board * temp_board = board->copy();
         temp_board->doMove(moves[i], my_side);
-        
+
+        if (temp_board->isCorner(moves[i]))
+        {
+            return moves[i];
+        }
+
         // Do the same as before, since now we must calculate the heuristic 
         // for each opponent move (for every user move)
         int opp_min_score = INT_MAX;
@@ -210,3 +211,120 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
 
     return to_return;
 }
+
+Move * Player::getMinimax(Board * b, std::vector<Move *> m)
+{
+    vector<int> scores(m.size(), 0);
+
+    for (unsigned int i = 0; i < m.size(); i++)
+    {
+        Board * copy = b->copy();
+        copy->doMove(m[i], my_side);
+        // cerr << "My move: " << m[i]->getX() << " " << m[i]->getY() << "\n";
+        scores[i] = getMinMove(copy, 3);
+        // cerr << "Score: " << scores[i] << "\n";
+    }
+
+    int max = 0;
+    int max_score = scores[0];
+    for (unsigned int i = 1; i < scores.size(); i++)
+    {
+        if (scores[i] > max_score)
+        {
+            max = i;
+            max_score = scores[i];
+        }
+    }
+
+    // cerr << "MAX SCORE: " << scores[max] << "\n";
+
+    return m[max];
+}
+
+int Player::getMaxMove(Board * b, int depth)
+{
+    vector<Move * > moves = b->getMoves(my_side);
+    vector<int> scores(moves.size(), 0);
+
+    if (depth == 0)
+    {
+        return getScore(b);
+    }
+
+    if (moves.size() == 0)
+    {
+        return getMaxMove(b, depth - 1);
+    }
+
+    for (unsigned int i = 0; i < moves.size(); i++)
+    {
+        // cerr << "my move: " << moves[i]->getX() << " " << moves[i]->getY() << "\n";
+        Board * copy = b->copy();
+        copy->doMove(moves[i], my_side);
+
+        scores[i] = getMaxMove(copy, depth - 1);
+        // cerr << "Max score: " << scores[i] << "\n";
+    }
+
+    int max = 0;
+    int max_score = scores[0];
+    for (unsigned int i = 1; i < scores.size(); i++)
+    {
+        if (scores[i] > max_score)
+        {
+            max = i;
+            max_score = scores[i];
+        }
+    }
+
+    // cerr << "FINAL MAX SCORE: " << scores[max] << "\n";
+
+    return scores[max];
+}
+
+int Player::getMinMove(Board * b, int depth)
+{
+    vector<Move * > moves = b->getMoves(opponent_side);
+    vector<int> scores(moves.size(), 0);
+
+    if (depth == 0)
+    {
+        return getScore(b);
+    }
+
+    if (moves.size() == 0)
+    {
+        return getMaxMove(b, depth - 1);
+    }
+
+    for (unsigned int i = 0; i < moves.size(); i++)
+    {
+        // cerr << "\topp move: " << moves[i]->getX() << " " << moves[i]->getY() << "\n";
+        Board * copy = b->copy();
+        copy->doMove(moves[i], opponent_side);
+
+        scores[i] = getMaxMove(copy, depth - 1);
+        // cerr << "\tmin score: " << scores[i] << "\n";
+    }
+
+    int min = 0;
+    int min_score = scores[0];
+    for (unsigned int i = 1; i < scores.size(); i++)
+    {
+        if (scores[i] < min_score)
+        {
+            min = i;
+            min_score = scores[i];
+        }
+    }
+
+    // cerr << "\tMIN OVERALL SCORE: " << scores[min] << "\n";
+
+    return scores[min];
+}
+
+int Player::getScore(Board * b)
+{
+    return b->count(my_side) - b->count(opponent_side);
+}
+

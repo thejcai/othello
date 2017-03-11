@@ -18,15 +18,14 @@ public:
     Move *getRandomMove(vector<Move*> moves);
     Move *getHeuristicMove(vector<Move*> moves);
     Move *getTwoPlyMove(vector<Move *> moves);
-<<<<<<< HEAD
     int getOppMoveValue(Board * board, Move * move);
-=======
-    Move *getMinimax(std::vector<Move *> moves, int depth);
-    Move *getMaxMove(Board * b, std::vector<Move *> moves, 
-        int depth, Side s);
-    Move *getMinMove(Board * b, std::vector<Move *> moves, 
-        int depth, Side s);
->>>>>>> 36b28e554515a65a3c29329ad27eb88f46528026
+
+    // Minimax methods
+    Move *getMinimax(Board * b, std::vector<Move *> m);
+    int getMaxMove(Board * b, int depth);
+    int getMinMove(Board * b, int depth);
+    int getScore(Board * b);
+
     void setBoard(Board * board);
 
     // Flag to tell if the player is running within the test_minimax context
