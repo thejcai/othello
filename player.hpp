@@ -22,8 +22,8 @@ public:
 
     // Minimax methods
     Move *getMinimax(Board * b, std::vector<Move *> m);
-    int getMaxMove(Board * b, int depth);
-    int getMinMove(Board * b, int depth);
+    int getMaxMove(Board * b, int depth, int alpha, int beta);
+    int getMinMove(Board * b, int depth, int alpha, int beta);
     int getScore(Board * b);
 
     void setBoard(Board * board);

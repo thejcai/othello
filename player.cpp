@@ -215,13 +215,15 @@ Move * Player::getTwoPlyMove(vector<Move *> moves)
 Move * Player::getMinimax(Board * b, std::vector<Move *> m)
 {
     vector<int> scores(m.size(), 0);
+    int alpha = INT_MIN;
+    int beta = INT_MAX;
 
     for (unsigned int i = 0; i < m.size(); i++)
     {
         Board * copy = b->copy();
         copy->doMove(m[i], my_side);
         // cerr << "My move: " << m[i]->getX() << " " << m[i]->getY() << "\n";
-        scores[i] = getMinMove(copy, 3);
+        scores[i] = getMinMove(copy, 1, alpha, beta);
         // cerr << "Score: " << scores[i] << "\n";
     }
 
@@ -241,7 +243,7 @@ Move * Player::getMinimax(Board * b, std::vector<Move *> m)
     return m[max];
 }
 
-int Player::getMaxMove(Board * b, int depth)
+int Player::getMaxMove(Board * b, int depth, int alpha, int beta)
 {
     vector<Move * > moves = b->getMoves(my_side);
     vector<int> scores(moves.size(), 0);
@@ -253,7 +255,7 @@ int Player::getMaxMove(Board * b, int depth)
 
     if (moves.size() == 0)
     {
-        return getMaxMove(b, depth - 1);
+        return getMinMove(b, depth - 1, alpha, beta);
     }
 
     for (unsigned int i = 0; i < moves.size(); i++)
@@ -262,8 +264,18 @@ int Player::getMaxMove(Board * b, int depth)
         Board * copy = b->copy();
         copy->doMove(moves[i], my_side);
 
-        scores[i] = getMaxMove(copy, depth - 1);
+        scores[i] = getMinMove(copy, depth - 1, alpha, beta);
         // cerr << "Max score: " << scores[i] << "\n";
+
+        if (scores[i] > alpha)
+        {
+            alpha = scores[i];
+        }
+        if (alpha >= beta)
+        {
+            return scores[i];
+        }
+        
     }
 
     int max = 0;
@@ -282,7 +294,7 @@ int Player::getMaxMove(Board * b, int depth)
     return scores[max];
 }
 
-int Player::getMinMove(Board * b, int depth)
+int Player::getMinMove(Board * b, int depth, int alpha, int beta)
 {
     vector<Move * > moves = b->getMoves(opponent_side);
     vector<int> scores(moves.size(), 0);
@@ -294,7 +306,7 @@ int Player::getMinMove(Board * b, int depth)
 
     if (moves.size() == 0)
     {
-        return getMaxMove(b, depth - 1);
+        return getMaxMove(b, depth - 1, alpha, beta);
     }
 
     for (unsigned int i = 0; i < moves.size(); i++)
@@ -303,8 +315,17 @@ int Player::getMinMove(Board * b, int depth)
         Board * copy = b->copy();
         copy->doMove(moves[i], opponent_side);
 
-        scores[i] = getMaxMove(copy, depth - 1);
+        scores[i] = getMaxMove(copy, depth - 1, alpha, beta);
         // cerr << "\tmin score: " << scores[i] << "\n";
+
+        if (scores[i] < beta)
+        {
+            beta = scores[i];
+        }
+        if (beta <= alpha)
+        {
+            return scores[i];
+        }
     }
 
     int min = 0;
