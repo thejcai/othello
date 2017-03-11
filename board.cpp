@@ -10,6 +10,15 @@ Board::Board() {
     taken.set(4 + 8 * 4);
     black.set(4 + 8 * 3);
     black.set(3 + 8 * 4);
+
+    multiplier = {120, -20,  20,   5,   5,  20, -20, 120,
+                  -20, -40,  -5,  -5,  -5,  -5, -40, -20,
+                   20,  -5,  15,   3,   3,  15,  -5,  20,
+                    5,  -5,   3,   3,   3,   3,  -5,   5, 
+                    5,  -5,   3,   3,   3,   3,  -5,   5,
+                   20,  -5,  15,   3,   3,  15,  -5,  20,
+                  -20, -40,  -5,  -5,  -5,  -5, -40, -20,
+                  120, -20,  20,   5,   5,  20, -20, 120};
 }
 
 /*
@@ -208,6 +217,51 @@ bool Board::isNextToCorner(Move *m)
             (m->getX() == 6 && m->getY() == 6) ||
             (m->getX() == 7 && m->getY() == 6) ||
             (m->getX() == 6 && m->getY() == 7);
+}
+
+/**
+ * Gets weighted score based on square values
+ */
+int Board::getWeightedScore(Side side)
+{
+    int score = 0;
+
+    if (side == BLACK)
+    {
+        for (int i = 0; i < 64; i++)
+        {
+            if (taken[i])
+            {
+                if (black[i])
+                {
+                    score = score + multiplier[i];
+                }
+                else
+                {
+                    score = score - multiplier[i];
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 64; i++)
+        {
+            if (taken[i])
+            {
+                if (black[i])
+                {
+                    score = score - multiplier[i];
+                }
+                else
+                {
+                    score = score + multiplier[i];
+                }
+            }
+        }
+    }
+
+    return score;
 }
 
 /*

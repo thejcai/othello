@@ -223,7 +223,7 @@ Move * Player::getMinimax(Board * b, std::vector<Move *> m)
         Board * copy = b->copy();
         copy->doMove(m[i], my_side);
         // cerr << "My move: " << m[i]->getX() << " " << m[i]->getY() << "\n";
-        scores[i] = getMinMove(copy, 1, alpha, beta);
+        scores[i] = getMinMove(copy, 2, alpha, beta);
         // cerr << "Score: " << scores[i] << "\n";
     }
 
@@ -354,6 +354,8 @@ int Player::getMinMove(Board * b, int depth, int alpha, int beta)
 
 int Player::getScore(Board * b)
 {
-    return b->count(my_side) - b->count(opponent_side);
+    return b->getWeightedScore(my_side);
+
+    // return b->count(my_side) - b->count(opponent_side);
 }
 

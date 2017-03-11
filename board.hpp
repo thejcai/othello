@@ -12,6 +12,7 @@ class Board {
 private:
     bitset<64> black;
     bitset<64> taken;
+    vector<int> multiplier;
 
     bool occupied(int x, int y);
     bool get(Side side, int x, int y);
@@ -32,6 +33,8 @@ public:
     int countWhite();
     bool isCorner(Move *m);
     bool isNextToCorner(Move *m);
+
+    int getWeightedScore(Side side);
 
     void setBoard(char data[]);
 
