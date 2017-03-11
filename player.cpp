@@ -70,7 +70,13 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
     // Move * to_return = getRandomMove(moves);
     // Move * to_return = getHeuristicMove(moves);
+<<<<<<< HEAD
     Move * to_return = getTwoPlyMove(moves);
+=======
+    // Move * to_return = getTwoPlyMove(moves);
+    Move * to_return = getMinimax(moves, 2);
+
+>>>>>>> 36b28e554515a65a3c29329ad27eb88f46528026
     // cerr << "Making move: " << to_return->getX() << " " << to_return->getY() << endl;
 
     // Make move on board
@@ -149,6 +155,7 @@ int Player::getOppMoveValue(Board * board, Move * move)
 
     return this_score;
 }
+
 
 Move * Player::getTwoPlyMove(vector<Move *> moves)
 {
